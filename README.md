@@ -65,8 +65,16 @@ add them to the cart, and purchase them.
    ```sh
    kubectl port-forward deployment/loadgenerator 8089:8089
    ```
-   
 
+## Start Locust Load Generating
+
+Open http://localhost:8089/ in browser of your choice
+
+then weirdly fill the form as following
+  - Number of users of your choice
+  - spawn rate of your choice
+  - Host = **http://frontend:80**
+  - Run time of your choice
 
 
 ## Architecture
