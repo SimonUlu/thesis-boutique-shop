@@ -16,18 +16,18 @@
 
 {{ define "cart" }}
     {{ template "header" . }}
-    
+
     <div {{ with $.platform_css }} class="{{.}}" {{ end }}>
         <span class="platform-flag">
             {{$.platform_name}}
         </span>
     </div>
-    
+
     <main role="main" class="cart-sections">
 
         {{ if eq (len $.items) 0 }}
         <section class="empty-cart-section">
-            <h3>Your shopping cart is empty!</h3>
+            <h3>Your shopping cart is emptyli!</h3>
             <p>Items you add to your shopping cart will appear here.</p>
             <a class="cymbal-button-primary" href="/" role="button">Continue Shopping</a>
         </section>
