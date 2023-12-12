@@ -27,92 +27,47 @@ If you’re using this demo, please **★Star** this repository to show your int
 ## Local Quickstart
 
 1. Ensure you have the following requirements:
-   - Kind installed [Install Kind with Mac](https://kind.sigs.k8s.io/)
-   - 
+   - Docker Desktop installed
+   - Kind[Install Kind](https://kind.sigs.k8s.io/)
+   - Skaffold [Install Skaffold](https://skaffold.dev/docs/install/#standalone-binary)
    - Shell environment `git` and `kubectl`.
+   - Minimum of 6GB Memory allocated in Docker Desktop and 20 GB of free Diskspace (Open Docker Desktop -> Settings -> Resources)
+   - Minikube installed (install via homebrew on mac)
 
 2. Clone the repository.
 
-   ```sh
-   git clone https://github.com/GoogleCloudPlatform/microservices-demo
-   cd microservices-demo/
+  ```sh
+   git clone git@github.com:SimonUnterlugauer/thesis-boutique-shop.git
    ```
 
-3. Set the Google Cloud project and region and ensure the Google Kubernetes Engine API is enabled.
-
+3. Verify that you are connected to the respective control plane.
    ```sh
-   export PROJECT_ID=<PROJECT_ID>
-   export REGION=us-central1
-   gcloud services enable container.googleapis.com \
-     --project=${PROJECT_ID}
+   kubectl get nodes
    ```
 
-   Substitute `<PROJECT_ID>` with the ID of your Google Cloud project.
-  
-4. Confirm the services have been enabled for your project.
+4. Build the application (build all docker containers and orchestrate them in the initialised kub cluster)
 
    ```sh
-   gcloud services list --enabled --project=${PROJECT_ID}
+   skaffold run ## first time may take up to 30 mins
    ```
-
-
-5. Create a GKE cluster and get the credentials for it.
-
-   ```sh
-   gcloud container clusters create-auto online-boutique \
-     --project=${PROJECT_ID} --region=${REGION}
+   if you want to make changes to any of the source code run:
+  ```sh
+   skaffold dev ## first time may take up to 30 mins
    ```
-
-   Creating the cluster may take a few minutes.
-
-6. Deploy Online Boutique to the cluster.
-
-   ```sh
-   kubectl apply -f ./release/kubernetes-manifests.yaml
-   ```
-
-7. Wait for the pods to be ready.
+5. Verify pods are up and running
 
    ```sh
    kubectl get pods
    ```
 
-   After a few minutes, you should see the Pods in a `Running` state:
 
-   ```
-   NAME                                     READY   STATUS    RESTARTS   AGE
-   adservice-76bdd69666-ckc5j               1/1     Running   0          2m58s
-   cartservice-66d497c6b7-dp5jr             1/1     Running   0          2m59s
-   checkoutservice-666c784bd6-4jd22         1/1     Running   0          3m1s
-   currencyservice-5d5d496984-4jmd7         1/1     Running   0          2m59s
-   emailservice-667457d9d6-75jcq            1/1     Running   0          3m2s
-   frontend-6b8d69b9fb-wjqdg                1/1     Running   0          3m1s
-   loadgenerator-665b5cd444-gwqdq           1/1     Running   0          3m
-   paymentservice-68596d6dd6-bf6bv          1/1     Running   0          3m
-   productcatalogservice-557d474574-888kr   1/1     Running   0          3m
-   recommendationservice-69c56b74d4-7z8r5   1/1     Running   0          3m1s
-   redis-cart-5f59546cdd-5jnqf              1/1     Running   0          2m58s
-   shippingservice-6ccc89f8fd-v686r         1/1     Running   0          2m58s
-   ```
-
-8. Access the web frontend in a browser using the frontend's external IP.
+6. Bind frontend to localhost:8080
 
    ```sh
-   kubectl get service frontend-external | awk '{print $4}'
+   kubectl port-forward deployment/frontend 8080:8080
    ```
-
-   Visit `http://EXTERNAL_IP` in a web browser to access your instance of Online Boutique.
-
-9. Congrats! You've deployed the default Online Boutique. To deploy a different variation of Online Boutique (e.g., with Google Cloud Operations tracing, Istio, etc.), see [Deploy Online Boutique variations with Kustomize](#deploy-online-boutique-variations-with-kustomize).
-
-10. Once you are done with it, delete the GKE cluster.
-
-   ```sh
-   gcloud container clusters delete online-boutique \
-     --project=${PROJECT_ID} --region=${REGION}
-   ```
-
-   Deleting the cluster may take a few minutes.
+   
+7. Open Browser and navigate to localhost:8080 to view the frontend
 
 
 
