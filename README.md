@@ -60,6 +60,13 @@ add them to the cart, and purchase them.
    
 7. Open Browser and navigate to localhost:8080 to view the frontend
 
+8. Locust Loadgenerator Port lokal auf Rechner weiterleiten
+
+   ```sh
+   kubectl port-forward deployment/loadgenerator 8089:8089
+   ```
+   
+
 
 
 ## Architecture
