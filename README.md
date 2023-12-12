@@ -9,15 +9,6 @@ Online Boutique consists of an 11-tier microservices application. The applicatio
 web-based e-commerce app where users can browse items,
 add them to the cart, and purchase them.
 
-Google uses this application to demonstrate the use of technologies like
-Kubernetes, GKE, Istio, Stackdriver, and gRPC. This application
-works on any Kubernetes cluster, like Google
-Kubernetes Engine (GKE). It’s **easy to deploy with little to no configuration**.
-
-If you’re using this demo, please **★Star** this repository to show your interest!
-
-**Note to Googlers (Google employees):** Please fill out the form at [go/microservices-demo](http://go/microservices-demo).
-
 ## Screenshots
 
 | Home Page                                                                                                         | Checkout Screen                                                                                                    |
