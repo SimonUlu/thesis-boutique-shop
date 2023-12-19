@@ -15,6 +15,50 @@ add them to the cart, and purchase them.
 | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | [![Screenshot of store homepage](/docs/img/online-boutique-frontend-1.png)](/docs/img/online-boutique-frontend-1.png) | [![Screenshot of checkout screen](/docs/img/online-boutique-frontend-2.png)](/docs/img/online-boutique-frontend-2.png) |
 
+## Deploy to GKE
+1. Create Google Cloud Account with billing enabled
+2. activate following apis by looking for apis & services
+   - Artifact Registry API
+   - Kubernetes Engine API
+3. Create a google kubernetes cluster
+
+
+   ```sh
+      gcloud services enable container.googleapis.com
+      gcloud container clusters create demo --enable-autoupgrade \
+      --enable-autoscaling --min-nodes=3 --max-nodes=10 --num-nodes=5 --zone=us-central1-a
+      kubectl get nodes
+   ```
+
+4. Enable Google Container Registry (GCR) on your GCP project and configure the docker CLI to authenticate to GCR:
+
+   ```sh
+      gcloud services enable containerregistry.googleapis.com
+      gcloud auth configure-docker -q
+   ```
+
+5. In the root of this repository, run
+
+   ```sh
+       skaffold run --default-repo=gcr.io/[PROJECT_ID], where [PROJECT_ID] is your GCP project ID.
+   ```
+
+    This command:
+    
+    builds the container images
+    pushes them to GCR
+    applies the ./kubernetes-manifests deploying the application to Kubernetes.
+    Troubleshooting: If you get "No space left on device" error on Google Cloud Shell, you can build the images on Google Cloud Build: Enable the Cloud Build API, then run skaffold run -p gcb --default-repo=gcr.io/[PROJECT_ID] instead.
+
+6. Find the IP address of your application, then visit the application on your browser to confirm installation.
+
+   ```sh
+      kubectl get service frontend-external
+    ```
+
+
+7. Navigate to http://EXTERNAL-IP to access the web frontend.
+
 ## Local Build
 
 1. Ensure you have the following requirements:
