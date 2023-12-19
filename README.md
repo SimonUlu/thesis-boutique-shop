@@ -68,7 +68,9 @@ add them to the cart, and purchase them.
 
 ## Rebuild after downing
 
-1. Build the application (build all docker containers and orchestrate them in the initialised kub cluster)
+1. Go to Docker Desktop and start the Kind Control Plane to start up kubernetes
+
+2. Build the application (build all docker containers and orchestrate them in the initialised kub cluster)
 
    ```sh
    skaffold run 
@@ -78,13 +80,13 @@ add them to the cart, and purchase them.
    skaffold dev 
    ```
 
-2. Bind frontend to localhost:8080
+3. Bind frontend to localhost:8080
 
    ```sh
    kubectl port-forward deployment/frontend 8080:8080
    ```
 
-3. Locust Loadgenerator Port lokal auf Rechner weiterleiten
+4. Locust Loadgenerator Port lokal auf Rechner weiterleiten
 
    ```sh
    kubectl port-forward deployment/loadgenerator 8089:8089
