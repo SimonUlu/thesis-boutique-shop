@@ -15,7 +15,7 @@ add them to the cart, and purchase them.
 | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | [![Screenshot of store homepage](/docs/img/online-boutique-frontend-1.png)](/docs/img/online-boutique-frontend-1.png) | [![Screenshot of checkout screen](/docs/img/online-boutique-frontend-2.png)](/docs/img/online-boutique-frontend-2.png) |
 
-## Local Quickstart
+## Local Build
 
 1. Ensure you have the following requirements:
    - Docker Desktop installed
@@ -61,6 +61,30 @@ add them to the cart, and purchase them.
 7. Open Browser and navigate to localhost:8080 to view the frontend
 
 8. Locust Loadgenerator Port lokal auf Rechner weiterleiten
+
+   ```sh
+   kubectl port-forward deployment/loadgenerator 8089:8089
+   ```
+
+## Rebuild after downing
+
+1. Build the application (build all docker containers and orchestrate them in the initialised kub cluster)
+
+   ```sh
+   skaffold run 
+   ```
+   if you want to make changes to any of the source code and have hot reloading in place run:
+  ```sh
+   skaffold dev 
+   ```
+
+2. Bind frontend to localhost:8080
+
+   ```sh
+   kubectl port-forward deployment/frontend 8080:8080
+   ```
+
+3. Locust Loadgenerator Port lokal auf Rechner weiterleiten
 
    ```sh
    kubectl port-forward deployment/loadgenerator 8089:8089
