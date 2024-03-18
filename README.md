@@ -136,6 +136,24 @@ add them to the cart, and purchase them.
    kubectl port-forward deployment/loadgenerator 8089:8089
    ```
 
+5. Bind Grafana to port 3000
+
+   ```sh
+   kubectl port-forward service/grafana 3000:80
+   ```
+
+6. Bind prometheus server to localhost (as it is the data source for the graphana dashboards
+
+      ```sh
+    kubectl port-forward service/prometheus-server 9090:80
+   ```
+
+## Configure grafana with prometheus
+
+1. Get admin password for grafana and login to your dashboard
+2. Bind prometheus and grafana to ports
+3. Set data source to: http://prometheus-server:80 or http://localhost:9000
+
 ## Start Locust Load Generating
 
 Open http://localhost:8089/ in browser of your choice
