@@ -164,20 +164,20 @@ add them to the cart, and purchase them.
 2. Installation von prometheus
 
 
-  ``sh
+    ```sh
        kubectl create namespace monitoring
        helm install my-prometheus prometheus-community/kube-prometheus-stack --namespace monitoring
      ```
 
 3. Installation von grafana
 
-  ``sh
+    ```sh
        helm install my-grafana grafana/grafana --namespace monitoring
      ```
 
 4. Admin Passwort für Grafana abrufen und in Password-Manager speichern
 
-  ``sh
+      ```sh
        kubectl get secret --namespace monitoring my-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
      ```
 
