@@ -190,6 +190,9 @@ add them to the cart, and purchase them.
 
 ## Start Locust Load Generating
 
+- Changing the locust config to simulate changing user traffic by rebuilding kubernetes cluster with skaffold run oder keeping it alive by running skaffold dev
+
+
 Open http://localhost:8089/ in browser of your choice
 
 then weirdly fill the form as following
@@ -197,6 +200,8 @@ then weirdly fill the form as following
   - spawn rate of your choice
   - Host = **http://frontend:80**
   - Run time of your choice
+
+
 
 
 ## Architecture
