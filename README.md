@@ -154,19 +154,19 @@ add them to the cart, and purchase them.
 
    ```sh
     helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo update
+    helm repo update
    ```
 
-  ```sh
+    ```sh
       helm repo add grafana https://grafana.github.io/helm-charts
-helm repo update
+      helm repo update
      ```
 2. Installation von prometheus
 
 
   ``sh
        kubectl create namespace monitoring
-helm install my-prometheus prometheus-community/kube-prometheus-stack --namespace monitoring
+       helm install my-prometheus prometheus-community/kube-prometheus-stack --namespace monitoring
      ```
 
 3. Installation von grafana
