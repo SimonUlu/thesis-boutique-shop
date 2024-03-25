@@ -157,7 +157,7 @@ add them to the cart, and purchase them.
 helm repo update
    ```
 
-  ``sh
+  ```sh
       helm repo add grafana https://grafana.github.io/helm-charts
 helm repo update
      ```
