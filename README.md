@@ -115,6 +115,7 @@ add them to the cart, and purchase them.
 1. Go to Docker Desktop and start the Kind Control Plane to start up kubernetes
 
 2. Build the application (build all docker containers and orchestrate them in the initialised kub cluster)
+   note: errors while building often occure in unstable wifi-networks such as eduroam or brainfi. just execute more often or if still not working manually download stuff
 
    ```sh
    skaffold run 
