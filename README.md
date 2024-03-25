@@ -148,11 +148,44 @@ add them to the cart, and purchase them.
     kubectl port-forward service/prometheus-server 9090:80
    ```
 
+## Install and integrate grafana and prometheus
+
+1. Helm Repositorys für beide hinzufügen
+
+   ```sh
+    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+   ```
+
+  ``sh
+      helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+     ```
+2. Installation von prometheus
+
+
+  ``sh
+       kubectl create namespace monitoring
+helm install my-prometheus prometheus-community/kube-prometheus-stack --namespace monitoring
+     ```
+
+3. Installation von grafana
+
+  ``sh
+       helm install my-grafana grafana/grafana --namespace monitoring
+     ```
+
+4. Admin Passwort für Grafana abrufen und in Password-Manager speichern
+
+  ``sh
+       kubectl get secret --namespace monitoring my-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+     ```
+
+
 ## Configure grafana with prometheus
 
-1. Get admin password for grafana and login to your dashboard
-2. Bind prometheus and grafana to ports
-3. Set data source to: http://prometheus-server:80 or http://localhost:9000
+1. Bind prometheus and grafana to ports
+2. Set data source to: http://prometheus-server:80 or http://localhost:9000
 
 ## Start Locust Load Generating
 
