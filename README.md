@@ -34,7 +34,30 @@ add them to the cart, and purchase them.
      ```sh
       rate(kube_pod_container_status_restarts_total{namespace="default", container!="POD", container!=""}[5m])
      ```
-   
+
+5. Network Throughput per Container
+
+   ```sh
+      sum(rate(container_network_receive_bytes_total{namespace="default"}[5m])) by (pod)
+     ```
+
+7. Network throughput per container outgoing
+ 
+   ```sh
+      sum(rate(container_network_transmit_bytes_total{namespace="default"}[5m])) by (pod)
+     ```
+
+8. I/O Metrics Write Speed data gets written to "festplatte" (only available for redis db)
+  ```sh
+      sum(rate(container_fs_writes_bytes_total{namespace="default"}[5m])) by (pod)
+     ```
+
+9. Lesegeschwindigkeiten
+ ```sh
+      sum(rate(container_fs_reads_bytes_total{namespace="default"}[5m])) by (pod)
+     ```
+
+
 
 ## Deploy to GKE
 1. Create Google Cloud Account with billing enabled
