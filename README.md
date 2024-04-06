@@ -15,6 +15,27 @@ add them to the cart, and purchase them.
 | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | [![Screenshot of store homepage](/docs/img/online-boutique-frontend-1.png)](/docs/img/online-boutique-frontend-1.png) | [![Screenshot of checkout screen](/docs/img/online-boutique-frontend-2.png)](/docs/img/online-boutique-frontend-2.png) |
 
+## Prometheus Queries that can are helpful for monitoring the kub-cluster
+
+1. CPU-Utilization of the whole system:
+  ```sh
+      100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
+   ```
+2. CPU Utilization of the single pods
+  ```sh
+      sum(rate(container_cpu_usage_seconds_total{namespace="default", container!="POD", container!=""}[5m])) by (pod)
+   ```
+3. Memory utilization of the whole system
+  ```sh
+      (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100
+   ```
+
+4. Pod Restart Count
+     ```sh
+      rate(kube_pod_container_status_restarts_total{namespace="default", container!="POD", container!=""}[5m])
+     ```
+   
+
 ## Deploy to GKE
 1. Create Google Cloud Account with billing enabled
 2. activate following apis by looking for apis & services
