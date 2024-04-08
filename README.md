@@ -119,6 +119,12 @@ add them to the cart, and purchase them.
    git clone git@github.com:SimonUnterlugauer/thesis-boutique-shop.git
    ```
 
+3. Initialize kind cluster
+
+  ```sh
+   kind create cluster
+   ```
+
 3. Verify that you are connected to the respective control plane.
    ```sh
    kubectl get nodes
