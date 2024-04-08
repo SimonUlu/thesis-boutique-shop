@@ -226,6 +226,21 @@ add them to the cart, and purchase them.
        kubectl get secret --namespace monitoring my-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
      ```
 
+5. configure prometheus for being able to receive data from locust
+
+     ```sh
+       ### create prometheus-values.yaml in helm-chart dir
+       prometheus:
+        prometheusSpec:
+          additionalScrapeConfigs:
+            - job_name: 'locust'
+              static_configs:
+                - targets: ['loadgenerator:8089']
+     ```
+
+      ```sh
+       helm upgrade my-prometheus prometheus-community/prometheus -f custom-values.yaml
+     ```
 
 ## Configure grafana with prometheus
 
