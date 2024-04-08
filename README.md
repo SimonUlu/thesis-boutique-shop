@@ -9,129 +9,259 @@ Online Boutique consists of an 11-tier microservices application. The applicatio
 web-based e-commerce app where users can browse items,
 add them to the cart, and purchase them.
 
-Google uses this application to demonstrate the use of technologies like
-Kubernetes, GKE, Istio, Stackdriver, and gRPC. This application
-works on any Kubernetes cluster, like Google
-Kubernetes Engine (GKE). It’s **easy to deploy with little to no configuration**.
-
-If you’re using this demo, please **★Star** this repository to show your interest!
-
-**Note to Googlers (Google employees):** Please fill out the form at [go/microservices-demo](http://go/microservices-demo).
-
 ## Screenshots
 
 | Home Page                                                                                                         | Checkout Screen                                                                                                    |
 | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | [![Screenshot of store homepage](/docs/img/online-boutique-frontend-1.png)](/docs/img/online-boutique-frontend-1.png) | [![Screenshot of checkout screen](/docs/img/online-boutique-frontend-2.png)](/docs/img/online-boutique-frontend-2.png) |
 
-## Interactive quickstart (GKE)
+## Prometheus Queries that can are helpful for monitoring the kub-cluster
 
-[![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2FGoogleCloudPlatform%2Fmicroservices-demo&shellonly=true&cloudshell_image=gcr.io/ds-artifacts-cloudshell/deploystack_custom_image)
+1. CPU-Utilization of the whole system:
+  ```sh
+      100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
+   ```
+2. CPU Utilization of the single pods
+  ```sh
+      sum(rate(container_cpu_usage_seconds_total{namespace="default", container!="POD", container!=""}[5m])) by (pod)
+   ```
+3. Memory utilization of the whole system
+  ```sh
+      (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100
+   ```
 
-## Quickstart (GKE)
+4. Pod Restart Count
+     ```sh
+      rate(kube_pod_container_status_restarts_total{namespace="default", container!="POD", container!=""}[5m])
+     ```
+
+5. Network Throughput per Container
+
+   ```sh
+      sum(rate(container_network_receive_bytes_total{namespace="default"}[5m])) by (pod)
+     ```
+
+7. Network throughput per container outgoing
+ 
+   ```sh
+      sum(rate(container_network_transmit_bytes_total{namespace="default"}[5m])) by (pod)
+     ```
+
+8. I/O Metrics Write Speed data gets written to "festplatte" (only available for redis db)
+    ```sh
+      sum(rate(container_fs_writes_bytes_total{namespace="default"}[5m])) by (pod)
+     ```
+
+9. Lesegeschwindigkeiten
+   ```sh
+      sum(rate(container_fs_reads_bytes_total{namespace="default"}[5m])) by (pod)
+     ```
+
+
+
+## Deploy to GKE
+1. Create Google Cloud Account with billing enabled
+2. activate following apis by looking for apis & services
+   - Artifact Registry API
+   - Kubernetes Engine API
+3. Create a google kubernetes cluster
+
+
+   ```sh
+      gcloud services enable container.googleapis.com
+      gcloud container clusters create demo --enable-autoupgrade \
+      --enable-autoscaling --min-nodes=3 --max-nodes=10 --num-nodes=5 --zone=us-central1-a
+      kubectl get nodes
+   ```
+
+4. Enable Google Container Registry (GCR) on your GCP project and configure the docker CLI to authenticate to GCR:
+
+   ```sh
+      gcloud services enable containerregistry.googleapis.com
+      gcloud auth configure-docker -q
+   ```
+
+5. In the root of this repository, run
+
+   ```sh
+       skaffold run --default-repo=gcr.io/[PROJECT_ID], where [PROJECT_ID] is your GCP project ID.
+   ```
+
+    This command:
+    
+    builds the container images
+    pushes them to GCR
+    applies the ./kubernetes-manifests deploying the application to Kubernetes.
+    Troubleshooting: If you get "No space left on device" error on Google Cloud Shell, you can build the images on Google Cloud Build: Enable the Cloud Build API, then run skaffold run -p gcb --default-repo=gcr.io/[PROJECT_ID] instead.
+
+6. Find the IP address of your application, then visit the application on your browser to confirm installation.
+
+   ```sh
+      kubectl get service frontend-external
+    ```
+
+
+7. Navigate to http://EXTERNAL-IP to access the web frontend.
+
+## Local Build
 
 1. Ensure you have the following requirements:
-   - [Google Cloud project](https://cloud.google.com/resource-manager/docs/creating-managing-projects#creating_a_project).
-   - Shell environment with `gcloud`, `git`, and `kubectl`.
+   - Docker Desktop installed
+   - Kind[Install Kind](https://kind.sigs.k8s.io/)
+   - Skaffold [Install Skaffold](https://skaffold.dev/docs/install/#standalone-binary)
+   - Shell environment `git` and `kubectl`.
+   - Minimum of 6GB Memory allocated in Docker Desktop and 20 GB of free Diskspace (Open Docker Desktop -> Settings -> Resources)
+   - Minikube installed (install via homebrew on mac)
 
 2. Clone the repository.
 
-   ```sh
-   git clone https://github.com/GoogleCloudPlatform/microservices-demo
-   cd microservices-demo/
+  ```sh
+   git clone git@github.com:SimonUnterlugauer/thesis-boutique-shop.git
    ```
 
-3. Set the Google Cloud project and region and ensure the Google Kubernetes Engine API is enabled.
-
+3. Verify that you are connected to the respective control plane.
    ```sh
-   export PROJECT_ID=<PROJECT_ID>
-   export REGION=us-central1
-   gcloud services enable container.googleapis.com \
-     --project=${PROJECT_ID}
+   kubectl get nodes
    ```
 
-   Substitute `<PROJECT_ID>` with the ID of your Google Cloud project.
-  
-4. Confirm the services have been enabled for your project.
+4. Build the application (build all docker containers and orchestrate them in the initialised kub cluster)
 
    ```sh
-   gcloud services list --enabled --project=${PROJECT_ID}
+   skaffold run ## first time may take up to 30 mins
    ```
-
-
-5. Create a GKE cluster and get the credentials for it.
-
-   ```sh
-   gcloud container clusters create-auto online-boutique \
-     --project=${PROJECT_ID} --region=${REGION}
+   if you want to make changes to any of the source code run:
+  ```sh
+   skaffold dev ## first time may take up to 30 mins
    ```
-
-   Creating the cluster may take a few minutes.
-
-6. Deploy Online Boutique to the cluster.
-
-   ```sh
-   kubectl apply -f ./release/kubernetes-manifests.yaml
-   ```
-
-7. Wait for the pods to be ready.
+5. Verify pods are up and running
 
    ```sh
    kubectl get pods
    ```
 
-   After a few minutes, you should see the Pods in a `Running` state:
 
-   ```
-   NAME                                     READY   STATUS    RESTARTS   AGE
-   adservice-76bdd69666-ckc5j               1/1     Running   0          2m58s
-   cartservice-66d497c6b7-dp5jr             1/1     Running   0          2m59s
-   checkoutservice-666c784bd6-4jd22         1/1     Running   0          3m1s
-   currencyservice-5d5d496984-4jmd7         1/1     Running   0          2m59s
-   emailservice-667457d9d6-75jcq            1/1     Running   0          3m2s
-   frontend-6b8d69b9fb-wjqdg                1/1     Running   0          3m1s
-   loadgenerator-665b5cd444-gwqdq           1/1     Running   0          3m
-   paymentservice-68596d6dd6-bf6bv          1/1     Running   0          3m
-   productcatalogservice-557d474574-888kr   1/1     Running   0          3m
-   recommendationservice-69c56b74d4-7z8r5   1/1     Running   0          3m1s
-   redis-cart-5f59546cdd-5jnqf              1/1     Running   0          2m58s
-   shippingservice-6ccc89f8fd-v686r         1/1     Running   0          2m58s
-   ```
-
-8. Access the web frontend in a browser using the frontend's external IP.
+6. Bind frontend to localhost:8080
 
    ```sh
-   kubectl get service frontend-external | awk '{print $4}'
+   kubectl port-forward deployment/frontend 8080:8080
    ```
+   
+7. Open Browser and navigate to localhost:8080 to view the frontend
 
-   Visit `http://EXTERNAL_IP` in a web browser to access your instance of Online Boutique.
-
-9. Congrats! You've deployed the default Online Boutique. To deploy a different variation of Online Boutique (e.g., with Google Cloud Operations tracing, Istio, etc.), see [Deploy Online Boutique variations with Kustomize](#deploy-online-boutique-variations-with-kustomize).
-
-10. Once you are done with it, delete the GKE cluster.
+8. Locust Loadgenerator Port lokal auf Rechner weiterleiten
 
    ```sh
-   gcloud container clusters delete online-boutique \
-     --project=${PROJECT_ID} --region=${REGION}
+   kubectl port-forward deployment/loadgenerator 8089:8089
    ```
 
-   Deleting the cluster may take a few minutes.
+## Rebuild after downing
 
-## Use Terraform to provision a GKE cluster and deploy Online Boutique
+1. Go to Docker Desktop and start the Kind Control Plane to start up kubernetes
 
-The [`/terraform` folder](/terraform) contains instructions for using [Terraform](https://www.terraform.io/intro) to replicate the steps from [**Quickstart (GKE)**](#quickstart-gke) above.
+2. Build the application (build all docker containers and orchestrate them in the initialised kub cluster)
+   note: errors while building often occure in unstable wifi-networks such as eduroam or brainfi. just execute more often or if still not working manually download stuff
 
-## Other deployment variations
+   ```sh
+   skaffold run 
+   ```
+   if you want to make changes to any of the source code and have hot reloading in place run:
+  ```sh
+   skaffold dev 
+   ```
 
-- **Istio/Anthos Service Mesh**: [See these instructions.](/kustomize/components/service-mesh-istio/README.md)
-- **non-GKE clusters (Minikube, Kind)**: see the [Development Guide](/docs/development-guide.md)
+3. Bind frontend to localhost:8080
 
-## Deploy Online Boutique variations with Kustomize
+   ```sh
+   kubectl port-forward deployment/frontend 8080:8080
+   ```
 
-The [`/kustomize` folder](/kustomize) contains instructions for customizing the deployment of Online Boutique with different variations such as:
-* integrating with [Google Cloud Operations](/kustomize/components/google-cloud-operations/)
-* replacing the in-cluster Redis cache with [Google Cloud Memorystore (Redis)](/kustomize/components/memorystore), [AlloyDB](/kustomize/components/alloydb) or [Google Cloud Spanner](/kustomize/components/spanner)
-* etc.
+4. Locust Loadgenerator Port lokal auf Rechner weiterleiten
+
+   ```sh
+   kubectl port-forward deployment/loadgenerator 8089:8089
+   ```
+
+5. Bind Grafana to port 3000
+
+   ```sh
+   kubectl port-forward service/grafana 3000:80
+   ```
+
+6. Bind prometheus server to localhost (as it is the data source for the graphana dashboards
+
+      ```sh
+    kubectl port-forward service/prometheus-server 9090:80
+   ```
+
+## Install and integrate grafana and prometheus
+
+1. Helm Repositorys für beide hinzufügen
+
+   ```sh
+    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+    helm repo update
+   ```
+
+    ```sh
+      helm repo add grafana https://grafana.github.io/helm-charts
+      helm repo update
+     ```
+2. Installation von prometheus
+
+
+    ```sh
+       kubectl create namespace monitoring
+       helm install my-prometheus prometheus-community/kube-prometheus-stack --namespace monitoring
+     ```
+
+3. Installation von grafana
+
+    ```sh
+       helm install my-grafana grafana/grafana --namespace monitoring
+     ```
+
+4. Admin Passwort für Grafana abrufen und in Password-Manager speichern
+
+      ```sh
+       kubectl get secret --namespace monitoring my-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+     ```
+
+5. configure prometheus for being able to receive data from locust
+
+     ```sh
+       ### create prometheus-values.yaml in helm-chart dir
+       prometheus:
+        prometheusSpec:
+          additionalScrapeConfigs:
+            - job_name: 'locust'
+              static_configs:
+                - targets: ['loadgenerator:8089']
+     ```
+
+      ```sh
+       helm upgrade my-prometheus prometheus-community/prometheus -f custom-values.yaml
+     ```
+
+## Configure grafana with prometheus
+
+1. Bind prometheus and grafana to ports
+2. Set data source to: http://prometheus-server:80 or http://localhost:9000
+
+## Start Locust Load Generating
+
+- Changing the locust config to simulate changing user traffic by rebuilding kubernetes cluster with skaffold run oder keeping it alive by running skaffold dev
+
+
+Open http://localhost:8089/ in browser of your choice
+
+then weirdly fill the form as following
+  - Number of users of your choice
+  - spawn rate of your choice
+  - Host = **http://frontend:80**
+  - Run time of your choice
+
+
+
 
 ## Architecture
 
