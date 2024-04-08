@@ -1,0 +1,6 @@
+prometheus:
+  prometheusSpec:
+    additionalScrapeConfigs:
+      - job_name: 'locust'
+        static_configs:
+          - targets: ['loadgenerator:8089']

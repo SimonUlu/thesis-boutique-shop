@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+var count = 0;
 const pino = require('pino');
 const logger = pino({
   name: 'currencyservice-server',
@@ -177,6 +178,13 @@ function check (call, callback) {
  * CurrencyConverter service at the sample server port
  */
 function main () {
+
+  count++;
+
+  if (count % 100 == 0 && count !== 0) {
+    throw new Error("Fehler beim umrechnen der Währung");
+  }
+
   logger.info(`Starting gRPC server on port ${PORT}...`);
   const server = new grpc.Server();
   server.addService(shopProto.CurrencyService.service, {getSupportedCurrencies, convert});
