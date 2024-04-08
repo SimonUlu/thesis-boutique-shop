@@ -112,6 +112,7 @@ add them to the cart, and purchase them.
    - Shell environment `git` and `kubectl`.
    - Minimum of 6GB Memory allocated in Docker Desktop and 20 GB of free Diskspace (Open Docker Desktop -> Settings -> Resources)
    - Minikube installed (install via homebrew on mac)
+   - if you run into problems using new macs with arm chips install rosetta with homebrew and active rosetta for emulation in docker desktop settings
 
 2. Clone the repository.
 
