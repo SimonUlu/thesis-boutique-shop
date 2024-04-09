@@ -197,7 +197,7 @@ add them to the cart, and purchase them.
 6. Bind prometheus server to localhost (as it is the data source for the graphana dashboards
 
       ```sh
-    kubectl port-forward service/prometheus-server 9090:80
+    kubectl port-forward service/prometheus-server 9090:80 || kubectl port-forward service/prometheus-service 9090:9090
    ```
 
 ## Install and integrate grafana and prometheus
