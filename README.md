@@ -11,61 +11,17 @@ add them to the cart, and purchase them.
 
 ## Screenshots
 
-| Home Page                                                                                                         | Checkout Screen                                                                                                    |
-| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Home Page                                                                                                             | Checkout Screen                                                                                                        |
+| --------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | [![Screenshot of store homepage](/docs/img/online-boutique-frontend-1.png)](/docs/img/online-boutique-frontend-1.png) | [![Screenshot of checkout screen](/docs/img/online-boutique-frontend-2.png)](/docs/img/online-boutique-frontend-2.png) |
 
-## Prometheus Queries that can are helpful for monitoring the kub-cluster
-
-1. CPU-Utilization of the whole system:
-  ```sh
-      100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
-   ```
-2. CPU Utilization of the single pods
-  ```sh
-      sum(rate(container_cpu_usage_seconds_total{namespace="default", container!="POD", container!=""}[5m])) by (pod)
-   ```
-3. Memory utilization of the whole system
-  ```sh
-      (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100
-   ```
-
-4. Pod Restart Count
-     ```sh
-      rate(kube_pod_container_status_restarts_total{namespace="default", container!="POD", container!=""}[5m])
-     ```
-
-5. Network Throughput per Container
-
-   ```sh
-      sum(rate(container_network_receive_bytes_total{namespace="default"}[5m])) by (pod)
-     ```
-
-7. Network throughput per container outgoing
- 
-   ```sh
-      sum(rate(container_network_transmit_bytes_total{namespace="default"}[5m])) by (pod)
-     ```
-
-8. I/O Metrics Write Speed data gets written to "festplatte" (only available for redis db)
-    ```sh
-      sum(rate(container_fs_writes_bytes_total{namespace="default"}[5m])) by (pod)
-     ```
-
-9. Lesegeschwindigkeiten
-   ```sh
-      sum(rate(container_fs_reads_bytes_total{namespace="default"}[5m])) by (pod)
-     ```
-
-
-
 ## Deploy to GKE
+
 1. Create Google Cloud Account with billing enabled
 2. activate following apis by looking for apis & services
    - Artifact Registry API
    - Kubernetes Engine API
 3. Create a google kubernetes cluster
-
 
    ```sh
       gcloud services enable container.googleapis.com
@@ -87,25 +43,25 @@ add them to the cart, and purchase them.
        skaffold run --default-repo=gcr.io/[PROJECT_ID], where [PROJECT_ID] is your GCP project ID.
    ```
 
-    This command:
-    
-    builds the container images
-    pushes them to GCR
-    applies the ./kubernetes-manifests deploying the application to Kubernetes.
-    Troubleshooting: If you get "No space left on device" error on Google Cloud Shell, you can build the images on Google Cloud Build: Enable the Cloud Build API, then run skaffold run -p gcb --default-repo=gcr.io/[PROJECT_ID] instead.
+   This command:
+
+   builds the container images
+   pushes them to GCR
+   applies the ./kubernetes-manifests deploying the application to Kubernetes.
+   Troubleshooting: If you get "No space left on device" error on Google Cloud Shell, you can build the images on Google Cloud Build: Enable the Cloud Build API, then run skaffold run -p gcb --default-repo=gcr.io/[PROJECT_ID] instead.
 
 6. Find the IP address of your application, then visit the application on your browser to confirm installation.
 
    ```sh
       kubectl get service frontend-external
-    ```
-
+   ```
 
 7. Navigate to http://EXTERNAL-IP to access the web frontend.
 
 ## Local Build
 
 1. Ensure you have the following requirements:
+
    - Docker Desktop installed
    - Kind[Install Kind](https://kind.sigs.k8s.io/)
    - Skaffold [Install Skaffold](https://skaffold.dev/docs/install/#standalone-binary)
@@ -116,17 +72,18 @@ add them to the cart, and purchase them.
 
 2. Clone the repository.
 
-  ```sh
-   git clone git@github.com:SimonUnterlugauer/thesis-boutique-shop.git
-   ```
+```sh
+ git clone git@github.com:SimonUnterlugauer/thesis-boutique-shop.git
+```
 
 3. Initialize kind cluster
 
-  ```sh
-   kind create cluster
-   ```
+```sh
+ kind create cluster
+```
 
 3. Verify that you are connected to the respective control plane.
+
    ```sh
    kubectl get nodes
    ```
@@ -136,23 +93,25 @@ add them to the cart, and purchase them.
    ```sh
    skaffold run ## first time may take up to 30 mins
    ```
+
    if you want to make changes to any of the source code run:
-  ```sh
-   skaffold dev ## first time may take up to 30 mins
-   ```
+
+```sh
+ skaffold dev ## first time may take up to 30 mins
+```
+
 5. Verify pods are up and running
 
    ```sh
    kubectl get pods
    ```
 
-
 6. Bind frontend to localhost:8080
 
    ```sh
    kubectl port-forward deployment/frontend 8080:8080
    ```
-   
+
 7. Open Browser and navigate to localhost:8080 to view the frontend
 
 8. Locust Loadgenerator Port lokal auf Rechner weiterleiten
@@ -160,6 +119,8 @@ add them to the cart, and purchase them.
    ```sh
    kubectl port-forward deployment/loadgenerator 8089:8089
    ```
+
+9. Integrate prometheus and grafana by following the docs under custom-docs/setup/...
 
 ## Rebuild after downing
 
@@ -169,12 +130,14 @@ add them to the cart, and purchase them.
    note: errors while building often occure in unstable wifi-networks such as eduroam or brainfi. just execute more often or if still not working manually download stuff
 
    ```sh
-   skaffold run 
+   skaffold run
    ```
+
    if you want to make changes to any of the source code and have hot reloading in place run:
-  ```sh
-   skaffold dev 
-   ```
+
+```sh
+ skaffold dev
+```
 
 3. Bind frontend to localhost:8080
 
@@ -188,111 +151,18 @@ add them to the cart, and purchase them.
    kubectl port-forward deployment/loadgenerator 8089:8089
    ```
 
-5. Bind Grafana to port 3000
-
-   ```sh
-   kubectl port-forward service/grafana 3000:80
-   ```
-
-6. Bind prometheus server to localhost (as it is the data source for the graphana dashboards
-
-      ```sh
-    kubectl port-forward service/prometheus-server 9090:80 || kubectl port-forward service/prometheus-service 9090:9090
-   ```
-
-## Install and integrate grafana and prometheus
-
-1. Helm Repositorys für beide hinzufügen
-
-   ```sh
-    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-    helm repo update
-   ```
-
-    ```sh
-      helm repo add grafana https://grafana.github.io/helm-charts
-      helm repo update
-     ```
-2. Installation von prometheus
-
-
-    ```sh
-       kubectl create namespace monitoring
-       helm install my-prometheus prometheus-community/kube-prometheus-stack --namespace monitoring
-     ```
-
-3. Installation von grafana
-
-    ```sh
-       helm install my-grafana grafana/grafana --namespace monitoring
-     ```
-
-4. Admin Passwort für Grafana abrufen und in Password-Manager speichern
-
-      ```sh
-       kubectl get secret --namespace monitoring my-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
-     ```
-
-5. configure prometheus for being able to receive data from locust
-
-     ```sh
-       ### create prometheus-values.yaml in helm-chart dir
-       prometheus:
-        prometheusSpec:
-          additionalScrapeConfigs:
-            - job_name: 'locust'
-              static_configs:
-                - targets: ['loadgenerator:8089']
-     ```
-
-      ```sh
-       helm upgrade my-prometheus prometheus-community/prometheus -f custom-values.yaml
-     ```
-
-## Configure grafana with prometheus
-
-1. Bind prometheus and grafana to ports
-2. Set data source to: http://prometheus-server:80 or http://localhost:9000
-
 ## Start Locust Load Generating
 
 - Changing the locust config to simulate changing user traffic by rebuilding kubernetes cluster with skaffold run oder keeping it alive by running skaffold dev
 
-
 Open http://localhost:8089/ in browser of your choice
 
 then weirdly fill the form as following
-  - Number of users of your choice
-  - spawn rate of your choice
-  - Host = **http://frontend:80**
-  - Run time of your choice
 
-
-
-
-## Architecture
-
-**Online Boutique** is composed of 11 microservices written in different
-languages that talk to each other over gRPC.
-
-[![Architecture of
-microservices](/docs/img/architecture-diagram.png)](/docs/img/architecture-diagram.png)
-
-Find **Protocol Buffers Descriptions** at the [`./protos` directory](/protos).
-
-| Service                                              | Language      | Description                                                                                                                       |
-| ---------------------------------------------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| [frontend](/src/frontend)                           | Go            | Exposes an HTTP server to serve the website. Does not require signup/login and generates session IDs for all users automatically. |
-| [cartservice](/src/cartservice)                     | C#            | Stores the items in the user's shopping cart in Redis and retrieves it.                                                           |
-| [productcatalogservice](/src/productcatalogservice) | Go            | Provides the list of products from a JSON file and ability to search products and get individual products.                        |
-| [currencyservice](/src/currencyservice)             | Node.js       | Converts one money amount to another currency. Uses real values fetched from European Central Bank. It's the highest QPS service. |
-| [paymentservice](/src/paymentservice)               | Node.js       | Charges the given credit card info (mock) with the given amount and returns a transaction ID.                                     |
-| [shippingservice](/src/shippingservice)             | Go            | Gives shipping cost estimates based on the shopping cart. Ships items to the given address (mock)                                 |
-| [emailservice](/src/emailservice)                   | Python        | Sends users an order confirmation email (mock).                                                                                   |
-| [checkoutservice](/src/checkoutservice)             | Go            | Retrieves user cart, prepares order and orchestrates the payment, shipping and the email notification.                            |
-| [recommendationservice](/src/recommendationservice) | Python        | Recommends other products based on what's given in the cart.                                                                      |
-| [adservice](/src/adservice)                         | Java          | Provides text ads based on given context words.                                                                                   |
-| [loadgenerator](/src/loadgenerator)                 | Python/Locust | Continuously sends requests imitating realistic user shopping flows to the frontend.                                              |
+- Number of users of your choice
+- spawn rate of your choice
+- Host = **http://frontend:80**
+- Run time of your choice
 
 ## Features
 

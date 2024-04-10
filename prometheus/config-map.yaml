@@ -135,3 +135,16 @@ data:
         - source_labels: [__meta_kubernetes_service_name]
           action: replace
           target_label: kubernetes_name
+      - job_name: 'locust'
+        kubernetes_sd_configs:
+        - role: service
+          namespaces:
+            names:
+            - default
+        relabel_configs:
+        - source_labels: [__meta_kubernetes_service_name]
+          regex: 'locust'
+          action: keep
+        - source_labels: [__meta_kubernetes_service_port]
+          regex: '9091'
+          action: keep

@@ -24,38 +24,38 @@ Note: if you are using GKE run this command to make sure you have admin privileg
 
 ```sh
   apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: prometheus
-rules:
-- apiGroups: [""]
-  resources:
-  - nodes
-  - nodes/proxy
-  - services
-  - endpoints
-  - pods
-  verbs: ["get", "list", "watch"]
-- apiGroups:
-  - extensions
-  resources:
-  - ingresses
-  verbs: ["get", "list", "watch"]
-- nonResourceURLs: ["/metrics"]
-  verbs: ["get"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: prometheus
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: prometheus
-subjects:
-- kind: ServiceAccount
-  name: default
-  namespace: monitoring
+  metadata:
+    name: prometheus
+  rules:
+  - apiGroups: [""]
+    resources:
+    - nodes
+    - nodes/proxy
+    - services
+    - endpoints
+    - pods
+    verbs: ["get", "list", "watch"]
+  - apiGroups:
+    - extensions
+    resources:
+    - ingresses
+    verbs: ["get", "list", "watch"]
+  - nonResourceURLs: ["/metrics"]
+    verbs: ["get"]
+  ---
+  apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRoleBinding
+  metadata:
+    name: prometheus
+  roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: prometheus
+  subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: monitoring
 
 ```
 
@@ -209,6 +209,13 @@ subjects:
 
 ```
 
+Note: After changes restart pod by deleting old pod as follows:
+
+```sh
+  ## get pod name before and then delete
+  kubectl delete pod prometheus-deployment-96898bbc9-tqmvg
+```
+
 6. Create config map on your kubernetes cluster
 
 ```sh
@@ -295,7 +302,9 @@ Note: check if the created deployment was created
   kubectl port-forward prometheus-monitoring-3331088907-hm5n1 8080:9090 -n monitoring
 ```
 
-10. Now you only have one slight problem:
+10. Add prometheus service so grafana can access the data that is submitted (port binding alone is not enough)
+
+11. Now you only have one slight problem:
 
 Kube state metrics target will be down. Check with visiting the url you binded your prometheus server to and then
 go to status->targets. This is due to it not being configured. Kube state metrics target is important for generating metrics such as cpu-usage and memory-usage or pod restart count. For further instance follow the docs under kube-state-metrics-config
