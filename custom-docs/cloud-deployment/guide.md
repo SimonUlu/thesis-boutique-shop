@@ -1,22 +1,22 @@
-## Follow this guide to properly setup this repo on the google kubernetes engine
-1. Ensure you have the following requirements:
+# Follow this guide to properly setup this repo on the google kubernetes engine
+## 1. Ensure you have the following requirements:
     - Google Cloud project.
     - Shell environment with gcloud, git, and kubectl.
 
-2. Clone the last version 
+## 2. Clone the last version 
 
 ```sh
     git clone <repo_url>
 ```
 
-3. Enable container api on google cloud project (create project before if not done with step 1 in google cloud console)
+## 3. Enable container api on google cloud project (create project before if not done with step 1 in google cloud console)
 
 ```sh
 gcloud services enable container.googleapis.com \
   --project=${PROJECT_ID}
 ```
 
-4. Create the cluster for further details check docs 
+## 4. Create the cluster for further details check docs 
 
 #### Flags:
 
@@ -40,7 +40,7 @@ These flags provide a flexible configuration for creating and managing your clus
 
 **Warning:** If max nodes = 10 set disk-size to 50GB or smaller otherwise the nodes will have problems while autoscaling because all resources are already allocated
 
-5. Start deployment (specify right path where your manifests lie)
+## 5. Start deployment (specify right path where your manifests lie)
 
 #### By using kubectl
 
@@ -61,63 +61,33 @@ skaffold run -p gcb --default-repo=gcr.io/[PROJECT_ID]
 - `-p gcb`: Set this flag to run build process of docker images on google cloud console and not on your machine. Especially helpful if you use a machine without x-amd architecture (like mine). If you want to build images that are based on x-amd on your local machine with different processor you have to do a lot of debugging before. The only disadvantage is that cloud build has to be run new every time you build so it may take a little longer sometimes when rebuilding 
 
 
-6. Check pod health status
+## 6. Check pod health status
 
 ```sh
 kubectl get pods
 ```
 
-7. Get external ip-adress in kub cluster
+## 7. Get external ip-adress in kub cluster
 
 ```sh
 kubectl get service frontend-external
 ```
 
-8. Add locust load generator service (with ui) 
+## 8. Add locust load generator service (with ui) 
 
 Follow the guide under [Locust_Setup](../loadgenerator/deploy.md)
 
-8. Add external port to loadgenerator deployment to listen to und container
 
-```sh
-ports:
-  - containerPort: 8089
-```
-
-9. Add external loadgenerator service to get in the web ui
-
-```sh
-##load balancer service
-apiVersion: v1
-kind: Service
-metadata:
-  name: loadgenerator-web-ui
-spec:
-  type: LoadBalancer
-  ports:
-  - port: 80
-    targetPort: 8089
-  selector:
-    app: loadgenerator
-```
-
-10. Create external service for loadgenerator
-
-```sh
-kubectl apply -f loadgenerator/loadgenerator-service.yaml
-```
-
-11. Get external ui of loadgen service
-
-```sh
-kubectl get services
-```
-
-12. Make sure that non of your resource limits were reached
-
+## 9. Make sure that non of your resource limits were reached
 by visiting google cloud console -> apis -> compute engine api to check the current resource utilization
 problems can lead to nodes not being able to scale up
 
-13. go to external ui in browser
+When running 
+
+```sh
+kubectl get pods
+```
+
+All pods should be up and running. If not try to get the logs of the pods that are not running and see what went wrong when building. Normally it should be because of resource restrictions that are set within your google cloud console. Try updating your cluster to match the restrictions or try updating the restrictions under [Google Compute Engine](https://console.cloud.google.com/apis/api/compute.googleapis.com/)
 
 
