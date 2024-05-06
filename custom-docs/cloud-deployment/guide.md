@@ -1,3 +1,4 @@
+## Follow this guide to properly setup this repo on the google kubernetes engine
 1. Ensure you have the following requirements:
     - Google Cloud project.
     - Shell environment with gcloud, git, and kubectl.
@@ -74,7 +75,7 @@ kubectl get service frontend-external
 
 8. Add locust load generator service (with ui) 
 
-Follow the guide under [Locust_Setup](custom-docs/loadgenerator/deploy.md)
+Follow the guide under [Locust_Setup](../loadgenerator/deploy.md)
 
 8. Add external port to loadgenerator deployment to listen to und container
 
