@@ -88,7 +88,7 @@ Note: All files for the setup are provided by Bibin Wilson on his git-repo (git 
 5. Create the deployment by executing following command
 
 ```sh
-  kubectl create -f grafana/deployment.yaml
+  kubectl create -f grafana/deployment.yaml -n monitoring
 ```
 
 6. Create a service file under grafana-folder
@@ -115,7 +115,7 @@ Note: All files for the setup are provided by Bibin Wilson on his git-repo (git 
 7. Create the service
 
 ```sh
-  kubectl create -f grafana/service.yaml
+  kubectl create -f grafana/service.yaml -n monitoring
 ```
 
 8. Bind your pod to port

@@ -1,12 +1,12 @@
+##load balancer service
 apiVersion: v1
 kind: Service
 metadata:
-  name: loadgenerator-service
+  name: loadgenerator-web-ui
 spec:
   type: LoadBalancer
   ports:
   - port: 80
-    targetPort: 8089
-    protocol: TCP
+    targetPort: 8089 # Angenommen, Ihre Web-UI läuft auf Port 8089 im Pod
   selector:
     app: loadgenerator

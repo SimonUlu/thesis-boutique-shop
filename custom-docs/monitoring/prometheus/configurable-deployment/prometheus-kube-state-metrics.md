@@ -15,7 +15,7 @@ Note: it already exists in this project-dir or you could also just copy file by 
 2. Create all the objects for kubernetes by pointing to this file
 
 ```sh
-  kubectl apply -f kube-state-metrics-configs/
+  kubectl apply -f kube-state-metrics/
 ```
 
 3. Check the deployment status

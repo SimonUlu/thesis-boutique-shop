@@ -62,7 +62,6 @@ Note: if you are using GKE run this command to make sure you have admin privileg
 4. Create the role using the following command
 
 ```sh
-  ## make sure your file path matches
   kubectl create -f prometheus/clusterRole.yaml
 ```
 
@@ -277,14 +276,12 @@ Note: After changes restart pod by deleting old pod as follows:
 8. Create the deployment
 
 ```sh
-  ## make sure your file path matches
   kubectl create  -f prometheus/prometheus-deployment.yaml
 ```
 
 Note: check if the created deployment was created
 
 ```sh
-  ## make sure your file path matches
   kubectl get deployments --namespace=monitoring
 ```
 
@@ -296,15 +293,52 @@ Note: check if the created deployment was created
   kubectl get pods --namespace=monitoring
 ```
 
-9.2 Bind pod to port xxx (change prometheus-monitoring-.. to actual pod name):
+9.2 (local) Bind pod to port xxx (change prometheus-monitoring-.. to actual pod name):
 
 ```sh
-  kubectl port-forward prometheus-monitoring-3331088907-hm5n1 8080:9090 -n monitoring
+  kubectl port-forward prometheus-monitoring-3331088907-hm5n1 80:9090 -n monitoring
 ```
 
-10. Add prometheus service so grafana can access the data that is submitted (port binding alone is not enough)
+9.3 (Cloud deployment) Exposing Prometheus as a Service [NodePort & LoadBalancer] 
 
-11. Now you only have one slight problem:
+the service prometheus file generates a loadbalancer service to change to nodeport just change type and also add nodeport:30000
+
+```sh
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-service
+  namespace: monitoring
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '9090'
+spec:
+  selector:
+    app: prometheus-server
+  type: LoadBalancer // NodePort
+  ports:
+    - port: 80
+      targetPort: 9090
+      // nodePort: 30000
+```
+
+
+
+10 Create the service by using the prior created file
+
+```sh
+kubectl create -f prometheus-service.yaml --namespace=monitoring
+```
+
+11. Get external ip address
+
+```sh
+kubectl get services -n monitoring
+```
+
+12. Add prometheus service so grafana can access the data that is submitted (port binding alone is not enough)
+
+13. Now you only have one slight problem:
 
 Kube state metrics target will be down. Check with visiting the url you binded your prometheus server to and then
 go to status->targets. This is due to it not being configured. Kube state metrics target is important for generating metrics such as cpu-usage and memory-usage or pod restart count. For further instance follow the docs under kube-state-metrics-config
