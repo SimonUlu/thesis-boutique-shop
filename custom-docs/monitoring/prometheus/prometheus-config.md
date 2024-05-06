@@ -1,8 +1,6 @@
-# Start this doc after building the initial kubernetes cluster with skaffold
+# Prometheus Monitoring setup on kubernetes cluster
 
-## Prometheus Monitoring setup on kubernetes cluster
-
-1. Connect to your kubernetes cluster and go to root dir (make sure you have admin privileges)
+## 1. Connect to your kubernetes cluster and go to root dir (make sure you have admin privileges)
 
 Note: if you are using GKE run this command to make sure you have admin privileges
 
@@ -13,13 +11,13 @@ Note: if you are using GKE run this command to make sure you have admin privileg
     --user $ACCOUNT
 ```
 
-2. Create namespace monitoring to make sure that the default namespace is only reserverd by application critical pods
+## 2. Create namespace monitoring to make sure that the default namespace is only reserverd by application critical pods
 
 ```sh
   kubectl create namespace monitoring
 ```
 
-3. Create a file clusterRole.yaml under prometheus-dir (already exists in our project)
+## 3. Create a file clusterRole.yaml under prometheus-dir (already exists in our project)
    edit config to your needs
 
 ```sh
@@ -59,13 +57,13 @@ Note: if you are using GKE run this command to make sure you have admin privileg
 
 ```
 
-4. Create the role using the following command
+## 4. Create the role using the following command
 
 ```sh
   kubectl create -f prometheus/clusterRole.yaml
 ```
 
-5. Create a file named config-map.yaml (already exists under prometheus dir)
+## 5. Create a file named config-map.yaml (already exists under prometheus dir)
 
 ```sh
   apiVersion: v1
@@ -215,14 +213,14 @@ Note: After changes restart pod by deleting old pod as follows:
   kubectl delete pod prometheus-deployment-96898bbc9-tqmvg
 ```
 
-6. Create config map on your kubernetes cluster
+## 6. Create config map on your kubernetes cluster
 
 ```sh
   ## make sure your file path matches
   kubectl create -f prometheus/config-map.yaml
 ```
 
-7. Create a deployment.yaml file to deploy prometheus to a pod in your namespace monitoring
+## 7. Create a deployment.yaml file to deploy prometheus to a pod in your namespace monitoring
 
 ```sh
   apiVersion: apps/v1
@@ -273,7 +271,7 @@ Note: After changes restart pod by deleting old pod as follows:
             emptyDir: {}
 ```
 
-8. Create the deployment
+## 8. Create the deployment
 
 ```sh
   kubectl create  -f prometheus/prometheus-deployment.yaml
@@ -285,21 +283,21 @@ Note: check if the created deployment was created
   kubectl get deployments --namespace=monitoring
 ```
 
-9. Now you are good to go to bind your cluster to a port. F.e. with kubectl port forwarding
+## 9. Now you are good to go to bind your cluster to a port. F.e. with kubectl port forwarding
 
-9.1 Get the pod name:
+### 9.1 Get the pod name:
 
 ```sh
   kubectl get pods --namespace=monitoring
 ```
 
-9.2 (local) Bind pod to port xxx (change prometheus-monitoring-.. to actual pod name):
+### 9.2 (local) Bind pod to port xxx (change prometheus-monitoring-.. to actual pod name):
 
 ```sh
   kubectl port-forward prometheus-monitoring-3331088907-hm5n1 80:9090 -n monitoring
 ```
 
-9.3 (Cloud deployment) Exposing Prometheus as a Service [NodePort & LoadBalancer] 
+### 9.3 (Cloud deployment) Exposing Prometheus as a Service [NodePort & LoadBalancer] 
 
 the service prometheus file generates a loadbalancer service to change to nodeport just change type and also add nodeport:30000
 
@@ -324,21 +322,21 @@ spec:
 
 
 
-10 Create the service by using the prior created file
+## 10. Create the service by using the prior created file
 
 ```sh
 kubectl create -f prometheus-service.yaml --namespace=monitoring
 ```
 
-11. Get external ip address
+## 11. Get external ip address
 
 ```sh
 kubectl get services -n monitoring
 ```
 
-12. Add prometheus service so grafana can access the data that is submitted (port binding alone is not enough)
+## 12. Add prometheus service so grafana can access the data that is submitted (port binding alone is not enough)
 
-13. Now you only have one slight problem:
+## 13. Now you only have one slight problem:
 
 Kube state metrics target will be down. Check with visiting the url you binded your prometheus server to and then
-go to status->targets. This is due to it not being configured. Kube state metrics target is important for generating metrics such as cpu-usage and memory-usage or pod restart count. For further instance follow the docs under kube-state-metrics-config
+go to status->targets. This is due to it not being configured. Kube state metrics target is important for generating metrics such as cpu-usage and memory-usage or pod restart count. For further instance follow the docs under [Kube State Metrics Config](prometheus-kube-state-metrics.md)

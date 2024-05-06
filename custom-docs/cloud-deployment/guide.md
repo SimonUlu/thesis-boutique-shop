@@ -77,8 +77,15 @@ kubectl get service frontend-external
 
 Follow the guide under [Locust_Setup](../loadgenerator/deploy.md)
 
+## 9. Add prometheus as external loadbalancer service to your cluster
 
-## 9. Make sure that non of your resource limits were reached
+Follow the guide under [Prometheus Setup](../monitoring/prometheus/prometheus-config.md)
+
+## 10. Add grafana as nodeport service to your cluster
+
+Follow the guide under [Grafana Setup](../monitoring/grafana/grafana-setup.md)
+
+## 11. Make sure that non of your resource limits were reached
 by visiting google cloud console -> apis -> compute engine api to check the current resource utilization
 problems can lead to nodes not being able to scale up
 

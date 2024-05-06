@@ -1,12 +1,10 @@
-# Start this documentation after building the prometheus server
-
-## Grafana Setup on kubernetes cluster
+# Grafana Setup on kubernetes cluster
 
 Note: All files for the setup are provided by Bibin Wilson on his git-repo (git clone https://github.com/bibinwilson/kubernetes-grafana.git)
 
-1. Create a folder grafana
+## 1. Create a folder grafana
 
-2. Create a file named grafana-datasource.yaml inside the prior created folder with following content
+## 2. Create a file named grafana-datasource.yaml inside the prior created folder with following content
 
 ```sh
   apiVersion: v1
@@ -32,13 +30,13 @@ Note: All files for the setup are provided by Bibin Wilson on his git-repo (git 
       }
 ```
 
-3. Execute following query to create the configmap needed for grafana service
+## 3. Execute following query to create the configmap needed for grafana service
 
 ```sh
   kubectl create -f grafana/grafana-datasource-config.yaml
 ```
 
-4. Create a deployment file inside grafana-folder (this will create the kubernetes-deployment)
+## 4. Create a deployment file inside grafana-folder (this will create the kubernetes-deployment)
 
 ```sh
   apiVersion: apps/v1
@@ -85,13 +83,13 @@ Note: All files for the setup are provided by Bibin Wilson on his git-repo (git 
                 name: grafana-datasources
 ```
 
-5. Create the deployment by executing following command
+## 5. Create the deployment by executing following command
 
 ```sh
   kubectl create -f grafana/deployment.yaml -n monitoring
 ```
 
-6. Create a service file under grafana-folder
+## 6. Create a service file under grafana-folder
 
 ```sh
   apiVersion: v1
@@ -112,13 +110,13 @@ Note: All files for the setup are provided by Bibin Wilson on his git-repo (git 
         nodePort: 32000
 ```
 
-7. Create the service
+## 7. Create the service
 
 ```sh
   kubectl create -f grafana/service.yaml -n monitoring
 ```
 
-8. Bind your pod to port
+## 8. Bind your pod to port
 
 ```sh
   ## find out the name of your pod

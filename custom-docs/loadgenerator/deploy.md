@@ -1,12 +1,12 @@
-## Follow these docs to add locust-loadgenerator to your application (For current configuration check [config](../../src/loadgenerator))
+# Follow these docs to add locust-loadgenerator to your application (For current configuration check [config](../../src/loadgenerator))
 
-1. Add external port to loadgenerator deployment to listen to und container
+## 1. Add external port to loadgenerator deployment to listen to und container
 ```sh
 ports:
   - containerPort: 8089
 ```
 
-2. Add external loadgenerator service to get in the web ui
+## 2. Add external loadgenerator service to get in the web ui
 
 ```sh
 ##load balancer service
@@ -23,13 +23,13 @@ spec:
     app: loadgenerator
 ```
 
-3. Create external service for loadgenerator
+## 3. Create external service for loadgenerator
 
 ```sh
 kubectl apply -f loadgenerator/loadgenerator-service.yaml
 ```
 
-4. Get external ui of loadgen service
+## 4. Get external ui of loadgen service
 
 ```sh
 kubectl get services
