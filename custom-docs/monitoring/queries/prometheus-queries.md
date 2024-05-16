@@ -23,6 +23,9 @@
   ##or
 
   sum (container_memory_working_set_bytes{id!="/",pod_name=~"^()()().*$",kubernetes_io_hostname=~"^.*$"}) by (pod_name,kubernetes_io_hostname)
+
+  ##or 
+  sum (container_memory_working_set_bytes{id!="/",pod_name=~"^()()().*$",kubernetes_io_hostname=~"^.*$"}) by (pod_name)
 ```
 
 4. Pod Restart Count

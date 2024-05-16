@@ -1,31 +1,10 @@
+## A long-term test that runs for hours or even days can provide insight into how your application 
+## behaves under sustained pressure, including aspects such as memory leaks and resource exhaustion.
+
 import random
-from locust import HttpUser, TaskSet, between, task, events
-from prometheus_client import start_http_server, Gauge
-import threading
+from locust import HttpUser, TaskSet, between, task
 import time
 import random
-
-# # Prometheus-Metriken definieren
-# REQUESTS = Gauge('locust_requests_total', 'Total number of requests made', ['method', 'name', 'response_code'])
-# RESPONSE_TIMES = Gauge('locust_response_time_seconds', 'Response times in seconds', ['method', 'name'])
-
-# # Event-Handler, um Metriken zu aktualisieren
-# def request_success_handler(request_type, name, response_time, response_length, **_):
-#     REQUESTS.labels(method=request_type, name=name, response_code="200").inc()
-#     RESPONSE_TIMES.labels(method=request_type, name=name).set(response_time / 1000.0)
-
-# def request_failure_handler(request_type, name, response_time, exception, response_length, response_code, **_):
-#     REQUESTS.labels(method=request_type, name=name, response_code=str(response_code)).inc()
-#     RESPONSE_TIMES.labels(method=request_type, name=name).set(response_time / 1000.0)
-
-# # Prometheus Exporter als separaten Thread starten
-# def start_exporter():
-#     start_http_server(9091)
-#     while True:
-#         time.sleep(1)
-
-# exporter_thread = threading.Thread(target=start_exporter)
-# exporter_thread.start()
 
 class MyCustomError(Exception):
     """Das ist Eine benutzerdefinierte Ausnahmeklasse."""
@@ -145,27 +124,27 @@ class UserBehavior(TaskSet):
     ## new version
 
 
-    @task(1)
+    @task(3)
     def task1(self):
         index(self)
 
-    @task(2)
+    @task(5)
     def task2(self):
         setCurrency(self)
 
-    @task(10)
+    @task(7)
     def task3(self):
         browseProduct(self)
 
-    @task(2)
+    @task(5)
     def task4(self):
         viewCart(self)
 
-    @task(3)
+    @task(5)
     def task5(self):
         addToCart(self)
 
-    @task(1)
+    @task(5)
     def task6(self):
         checkout(self)
 
