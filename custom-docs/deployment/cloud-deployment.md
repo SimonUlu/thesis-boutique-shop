@@ -1,4 +1,4 @@
-# Follow this guide to properly setup this repo on the google kubernetes engine
+# Build
 ## 1. Ensure you have the following requirements:
     - Google Cloud project.
     - Shell environment with gcloud, git, and kubectl.
@@ -96,5 +96,27 @@ kubectl get pods
 ```
 
 All pods should be up and running. If not try to get the logs of the pods that are not running and see what went wrong when building. Normally it should be because of resource restrictions that are set within your google cloud console. Try updating your cluster to match the restrictions or try updating the restrictions under [Google Compute Engine](https://console.cloud.google.com/apis/api/compute.googleapis.com/)
+
+
+# Reset or delete instance on the gke
+## 1. Get all active clusters
+
+```sh
+  gcloud container clusters list
+```
+
+## 2. Delete existing cluster
+```sh
+gcloud container clusters delete online-boutique \
+  --project=${PROJECT_ID} --region=${REGION}
+```
+
+## 3. Create Cluster 
+```sh
+gcloud container clusters create-auto online-boutique \
+  --project=${PROJECT_ID} --region=${REGION}
+```
+
+
 
 
