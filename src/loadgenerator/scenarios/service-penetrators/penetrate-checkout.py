@@ -1,12 +1,31 @@
-# In this scenario, you simulate a sudden increase in user activity that could correspond
-# to a real event such as a sale or a marketing campaign.
-
-## really increase the number of users in the web ui. 
-
 import random
 from locust import HttpUser, TaskSet, between, task, events
+from prometheus_client import start_http_server, Gauge
+import threading
 import time
 import random
+
+# # Prometheus-Metriken definieren
+# REQUESTS = Gauge('locust_requests_total', 'Total number of requests made', ['method', 'name', 'response_code'])
+# RESPONSE_TIMES = Gauge('locust_response_time_seconds', 'Response times in seconds', ['method', 'name'])
+
+# # Event-Handler, um Metriken zu aktualisieren
+# def request_success_handler(request_type, name, response_time, response_length, **_):
+#     REQUESTS.labels(method=request_type, name=name, response_code="200").inc()
+#     RESPONSE_TIMES.labels(method=request_type, name=name).set(response_time / 1000.0)
+
+# def request_failure_handler(request_type, name, response_time, exception, response_length, response_code, **_):
+#     REQUESTS.labels(method=request_type, name=name, response_code=str(response_code)).inc()
+#     RESPONSE_TIMES.labels(method=request_type, name=name).set(response_time / 1000.0)
+
+# # Prometheus Exporter als separaten Thread starten
+# def start_exporter():
+#     start_http_server(9091)
+#     while True:
+#         time.sleep(1)
+
+# exporter_thread = threading.Thread(target=start_exporter)
+# exporter_thread.start()
 
 class MyCustomError(Exception):
     """Das ist Eine benutzerdefinierte Ausnahmeklasse."""
@@ -22,6 +41,7 @@ products = [
     'L9ECAV7KIM',
     'LS4PSXUNUM',
     'OLJCESPC7Z',
+    'ERROR'
 ]
 
 def simulate_network_delay(): 
@@ -29,7 +49,6 @@ def simulate_network_delay():
 
 def maybe_raise_exception(response=None):
     if random.randint(1, 80) == 1:
-        simulate_network_delay()
         if response:
             response.failure("Ungültige Angaben des Nutzers haben zu einer Fehlermeldung geführt.")
         raise MyCustomError("Das ist eine Testexception um reale Applikation besser nachzubilden.")
@@ -111,15 +130,30 @@ def checkout(l):
 ## when you set conc users to 100 -> 100 dieser User klassen werden definiert
 class UserBehavior(TaskSet):
 
+    ## old version
+
+    # def on_start(self):
+    #     index(self)
+
+    # tasks = {index: 1,
+    #     setCurrency: 2,
+    #     browseProduct: 10,
+    #     addToCart: 2,
+    #     viewCart: 3,
+    #     checkout: 1}
+
+    ## new version
+
+
     @task(1)
     def task1(self):
         index(self)
 
-    @task(2)
+    @task(1)
     def task2(self):
         setCurrency(self)
 
-    @task(10)
+    @task(3)
     def task3(self):
         browseProduct(self)
 
@@ -127,11 +161,11 @@ class UserBehavior(TaskSet):
     def task4(self):
         viewCart(self)
 
-    @task(3)
+    @task(2)
     def task5(self):
         addToCart(self)
 
-    @task(1)
+    @task(15)
     def task6(self):
         checkout(self)
 

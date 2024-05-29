@@ -30,27 +30,27 @@
 
 ## 5. Build the application (build all docker containers and orchestrate them in the initialised kub cluster)
 
-   ```sh
-   skaffold run ## first time may take up to 30 mins
-   ```
+```sh
+skaffold run ## first time may take up to 30 mins
+```
 
    if you want to make changes to any of the source code run:
 
 ```sh
- skaffold dev ## first time may take up to 30 mins
+skaffold dev ## first time may take up to 30 mins
 ```
 
 ## 6. Verify pods are up and running
 
-   ```sh
-   kubectl get pods
-   ```
+```sh
+kubectl get pods
+```
 
 ## 7. Bind frontend to localhost:8080
 
-   ```sh
-   kubectl port-forward deployment/frontend 8080:8080
-   ```
+```sh
+kubectl port-forward deployment/frontend 8080:8080
+```
 
 ## 8. Open Browser and navigate to localhost:8080 to view the frontend
 
@@ -69,11 +69,11 @@
 ### 11.2 Build the application (build all docker containers and orchestrate them in the initialised kub cluster)
    note: errors while building often occure in unstable wifi-networks such as eduroam or brainfi. just execute more often or if still not working manually download stuff
 
-   ```sh
-   skaffold run
-   ```
+```sh
+skaffold run
+```
 
-   if you want to make changes to any of the source code and have hot reloading in place run:
+if you want to make changes to any of the source code and have hot reloading in place run:
 
 ```sh
  skaffold dev

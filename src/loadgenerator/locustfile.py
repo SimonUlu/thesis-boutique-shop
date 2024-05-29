@@ -149,11 +149,11 @@ class UserBehavior(TaskSet):
     def task1(self):
         index(self)
 
-    @task(2)
+    @task(1)
     def task2(self):
         setCurrency(self)
 
-    @task(10)
+    @task(3)
     def task3(self):
         browseProduct(self)
 
@@ -161,11 +161,11 @@ class UserBehavior(TaskSet):
     def task4(self):
         viewCart(self)
 
-    @task(3)
+    @task(2)
     def task5(self):
         addToCart(self)
 
-    @task(1)
+    @task(25)
     def task6(self):
         checkout(self)
 

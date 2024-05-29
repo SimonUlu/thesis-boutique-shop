@@ -53,13 +53,13 @@ visit external-ip in browser of your choice to see to loadgenerator
 ### 1. Get the logs of the system
 
 ```sh
-kubectl get logs
+kubectl logs **pod-id**
 ```
 
 ### 2. Copy all logs into text-file
 
 ```sh
-kubectl logs **pod-id** > /root/meine_logs.txt
+kubectl logs **pod-id** > assets/locust_logs/meine_logs.txt
 ```
 
 ## Extract to prometheus
@@ -108,4 +108,12 @@ def start_exporter():
 
 exporter_thread = threading.Thread(target=start_exporter)
 exporter_thread.start()
+```
+
+
+
+### 4. Delete pod to renew logs
+
+```sh
+kubectl delete pod **pod-id**
 ```

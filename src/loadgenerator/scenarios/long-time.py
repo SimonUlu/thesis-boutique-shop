@@ -1,8 +1,8 @@
-## A long-term test that runs for hours or even days can provide insight into how your application 
-## behaves under sustained pressure, including aspects such as memory leaks and resource exhaustion.
+## The goal of this scenario is to create an even and predictable load on all services. 
+## This can be helpful to understand the baseline performance of your application.
 
 import random
-from locust import HttpUser, TaskSet, between, task
+from locust import HttpUser, TaskSet, between, task, events
 import time
 import random
 
@@ -20,7 +20,6 @@ products = [
     'L9ECAV7KIM',
     'LS4PSXUNUM',
     'OLJCESPC7Z',
-    'ERROR'
 ]
 
 def simulate_network_delay(): 
@@ -28,6 +27,7 @@ def simulate_network_delay():
 
 def maybe_raise_exception(response=None):
     if random.randint(1, 80) == 1:
+        simulate_network_delay()
         if response:
             response.failure("Ungültige Angaben des Nutzers haben zu einer Fehlermeldung geführt.")
         raise MyCustomError("Das ist eine Testexception um reale Applikation besser nachzubilden.")
@@ -109,42 +109,27 @@ def checkout(l):
 ## when you set conc users to 100 -> 100 dieser User klassen werden definiert
 class UserBehavior(TaskSet):
 
-    ## old version
-
-    # def on_start(self):
-    #     index(self)
-
-    # tasks = {index: 1,
-    #     setCurrency: 2,
-    #     browseProduct: 10,
-    #     addToCart: 2,
-    #     viewCart: 3,
-    #     checkout: 1}
-
-    ## new version
-
-
-    @task(3)
+    @task(1)
     def task1(self):
         index(self)
 
-    @task(5)
+    @task(2)
     def task2(self):
         setCurrency(self)
 
-    @task(7)
+    @task(10)
     def task3(self):
         browseProduct(self)
 
-    @task(5)
+    @task(2)
     def task4(self):
         viewCart(self)
 
-    @task(5)
+    @task(3)
     def task5(self):
         addToCart(self)
 
-    @task(5)
+    @task(1)
     def task6(self):
         checkout(self)
 
