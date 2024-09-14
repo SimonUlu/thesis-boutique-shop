@@ -75,7 +75,7 @@ kubectl get service frontend-external
 
 ## 8. Add locust load generator service (with ui) 
 
-Follow the guide under [Locust_Setup](../loadgenerator/deploy.md)
+Follow the guide under [Locust_Setup](../system/loadgenerator/deploy.md)
 
 ## 9. Add prometheus as external loadbalancer service to your cluster
 
