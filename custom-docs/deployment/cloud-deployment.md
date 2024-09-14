@@ -79,11 +79,11 @@ Follow the guide under [Locust_Setup](../system/loadgenerator/setup.md)
 
 ## 9. Add prometheus as external loadbalancer service to your cluster
 
-Follow the guide under [Prometheus Setup](../monitoring/prometheus/prometheus-config.md)
+Follow the guide under [Prometheus Setup](../system/monitoring/prometheus/prometheus-config.md)
 
 ## 10. Add grafana as nodeport service to your cluster
 
-Follow the guide under [Grafana Setup](../monitoring/grafana/grafana-setup.md)
+Follow the guide under [Grafana Setup](../system/monitoring/grafana/grafana-setup.md)
 
 ## 11. Make sure that non of your resource limits were reached
 by visiting google cloud console -> apis -> compute engine api to check the current resource utilization
