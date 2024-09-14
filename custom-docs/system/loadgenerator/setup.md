@@ -78,7 +78,7 @@ RESPONSE_TIMES = Gauge('locust_response_time_seconds', 'Response times in second
 
 ### 2. Set up event handler for locust-events
 
-Um die Metriken zu aktualisieren, musst du Event-Handler für die Events request_success und request_failure von Locust registrieren. Diese Handler aktualisieren die Metriken, wenn eine Anfrage erfolgreich ist oder fehlschlägt.
+To update the metrics, you need to register event handlers for Locust's request_success and request_failure events. These handlers update the metrics when a request is successful or fails.
 
 ```sh
 from locust import events
@@ -97,7 +97,7 @@ events.request_failure.add_listener(request_failure_handler)
 
 ### 3. Start prometheus exporter
 
-Um die Metriken für Prometheus verfügbar zu machen, musst du einen HTTP-Server starten, der die Metriken ausgibt. Du kannst dies beim Start deines Locust-Tests tun.
+To make the metrics available for Prometheus, you need to start an HTTP server that outputs the metrics. You can do this when you start your Locust test.
 
 ```sh
 # Prometheus Exporter als separaten Thread starten
