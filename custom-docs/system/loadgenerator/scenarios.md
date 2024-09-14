@@ -76,13 +76,13 @@ response = Taskset.client.post("/product/" + product, catch_response=True)
 
 # Scenarios
 
-In dieser Dokumentation werden verschiedene Szenarien für Lasttests beschrieben, die mit Locust simuliert werden können. Locust ist ein leistungsstarkes Tool für Lasttests, das es ermöglicht, das Verhalten von Benutzern unter verschiedenen Bedingungen zu simulieren. Im Folgenden werden vier spezifische Szenarien detailliert beschrieben.
+This documentation describes various scenarios for load tests that can be simulated with Locust. Locust is a powerful load testing tool that makes it possible to simulate the behavior of users under different conditions. Four specific scenarios are described in detail below.
 
-## Szenario 1: Spitzenlast
+## Szenario 1: Peak Load
 
-**Zielsetzung:** Das Ziel dieses Szenarios ist es, zu verstehen, wie das System unter einer plötzlichen und extremen Last reagiert. Dies hilft, die Robustheit und Skalierbarkeit der Anwendung zu bewerten.
+**Goal:** The aim of this scenario is to understand how the system reacts under a sudden and extreme load. This helps to evaluate the robustness and scalability of the application.
 
-**Simulation mit Locust:**
+**Simulation with Locust:**
 
 ```sh
 class PeakLoadUser(HttpUser):
@@ -102,9 +102,9 @@ def setup_peak_load_scenario():
     os.system("locust -f locustfile.py --users 5000 --spawn-rate 1000")
 ```
 
-## Szenario 2: Stetiges Wachstum
-**Beschreibung:** 
-In diesem Szenario wird die Last langsam über einen längeren Zeitraum hinweg erhöht. Dies simuliert ein realistisches Wachstum der Benutzerzahlen über die Zeit.
+## Szenario 2: Steady Increase
+**Description:** 
+In this scenario, the load is slowly increased over a longer period of time. This simulates realistic growth in user numbers over time.
 
 ```sh
 os.system("locust -f locustfile.py --users 1000 --spawn-rate 10 --run-time 1h")
@@ -112,10 +112,10 @@ os.system("locust -f locustfile.py --users 1000 --spawn-rate 10 --run-time 1h")
 
 Um ein stetiges Wachstum zu simulieren, können wir die spawn_rate auf einen niedrigeren Wert setzen und die --run-time Option verwenden, um die Dauer des Tests zu definieren.
 
-## Szenario 3: Schrittweise Erhöhung
+## Szenario 3: Continous Increase
 
-**Beschreibung:**
-Die Last wird in vordefinierten Schritten erhöht und dann für eine bestimmte Zeit aufrechterhalten. Dies hilft zu verstehen, wie das System reagiert, wenn die Last stufenweise erhöht wird.
+**Description:**
+The load is increased in predefined steps and then maintained for a certain time. This helps to understand how the system reacts when the load is increased in steps.
 
 ```sh
 def setup_step_load_scenario():
@@ -125,10 +125,12 @@ def setup_step_load_scenario():
         time.sleep(600)  # Warten Sie 10 Minuten zwischen den Schritten
 ```
 
-## Szenario 4: Unvorhersehbare Lastspitzen
+## Szenario 4:  Unpredictable load peaks
 
-**Beschreibung:**
-Dieses Szenario simuliert zufällige Lastspitzen, um die Reaktion der Anwendung auf unerwartete Ereignisse zu testen.
+
+
+**Description:**
+This scenario simulates random load peaks to test the application's reaction to unexpected events.
 
 ```sh
 import random
