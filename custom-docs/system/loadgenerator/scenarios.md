@@ -110,7 +110,7 @@ In this scenario, the load is slowly increased over a longer period of time. Thi
 os.system("locust -f locustfile.py --users 1000 --spawn-rate 10 --run-time 1h")
 ```
 
-Um ein stetiges Wachstum zu simulieren, können wir die spawn_rate auf einen niedrigeren Wert setzen und die --run-time Option verwenden, um die Dauer des Tests zu definieren.
+To simulate continuous growth, we can set the spawn_rate to a lower value and use the --run-time option to define the duration of the test.
 
 ## Szenario 3: Continous Increase
 
